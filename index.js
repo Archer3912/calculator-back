@@ -1,6 +1,7 @@
 // 引用後端框架 express
 const express = require('express')
 const cors = require('cors')
+const math = require('mathjs')
 
 // 建立 express 實例
 const app = express()
@@ -11,8 +12,51 @@ app.use(cors())
 // 設置監聽的 port (後端 URL 會是 localhost:[PORT])
 const PORT = 3000
 
-// 小數點後保留位數
-const ROUND = 5
+//連續計算
+function continuousCalculation(value) {
+  //先處理乘法跟除法
+  function calculatorMultiplicationAndDivide(equation) {
+    return equation.replace(
+      /(\d+\.?\d*)([\/*])(\d+\.?\d*)/g,
+      function (match, num1, operator, num2) {
+        if (operator === '*') {
+          return Number(num1) * Number(num2)
+        } else if (operator === '/') {
+          return Number(num1) / Number(num2)
+        }
+      }
+    )
+  }
+
+  //再來處理加法跟減法
+  function calculatorPlusAndMinus(equation) {
+    let result = 0
+    let currentNumber = ''
+    let operator = '+'
+
+    for (let opera of equation) {
+      if (opera === '+' || opera === '-') {
+        result =
+          operator === '+'
+            ? result + Number(currentNumber)
+            : result - Number(currentNumber)
+        currentNumber = ''
+        operator = opera
+      } else {
+        currentNumber += opera
+      }
+    }
+    result =
+      operator === '+'
+        ? result + Number(currentNumber)
+        : result - Number(currentNumber)
+    return result
+  }
+
+  let multiplicationAndDivide = calculatorMultiplicationAndDivide(value)
+  let plusAndMinus = calculatorPlusAndMinus(multiplicationAndDivide)
+  return plusAndMinus
+}
 
 // 處理 GET localhost:[PORT] 的請求(註：localhost:[PORT] 和 localhost:[PORT]/ 是等價的，結尾有無 / 都一樣)
 // req: 前端發送來的請求物件
@@ -35,7 +79,7 @@ app.get('/plus', (req, res) => {
   const v1 = Number(QUERY.v1)
   const v2 = Number(QUERY.v2)
   res.json({
-    answer: v1 + v2,
+    answer: v1 + v2
   })
 })
 
@@ -48,7 +92,7 @@ app.get('/minus', (req, res) => {
   const v1 = Number(QUERY.v1)
   const v2 = Number(QUERY.v2)
   res.json({
-    answer: v1 - v2,
+    answer: v1 - v2
   })
 })
 
@@ -61,7 +105,7 @@ app.get('/multiply', (req, res) => {
   const v1 = Number(QUERY.v1)
   const v2 = Number(QUERY.v2)
   res.json({
-    answer: v1 * v2,
+    answer: v1 * v2
   })
 })
 
@@ -73,10 +117,39 @@ app.get('/divide', (req, res) => {
   const QUERY = req.query
   const v1 = Number(QUERY.v1)
   const v2 = Number(QUERY.v2)
+  // 小數點後保留位數
+  let around = 5
+  if (Number(QUERY.ROUND) !== null) {
+    around = Number(QUERY.ROUND)
+  }
   // 預設只保留小數點後 ROUND 位
-  const answer = Number((v1 / v2).toFixed(ROUND))
+  const answer = Number((v1 / v2).toFixed(around))
   res.json({
-    answer,
+    answer
+  })
+})
+
+//處理 GET localhost:[PORT]/continuous?value=xxxx    連續加減乘除的請求
+app.get('/continuous', (req, res) => {
+  const QUERY = req.query
+  const value = QUERY.value
+  const newValue = value.split(' ').join('')
+  console.log(newValue)
+  const answer = math.evaluate(newValue)
+  res.json({
+    answer
+  })
+})
+
+//處理 GET localhost:[PORT]/arithmetic?value=xxxx     連續加減乘除的請求
+app.get('/arithmetic', (req, res) => {
+  const QUERY = req.query
+  const value = QUERY.value
+  const newValue = value.split(' ').join('')
+  console.log(newValue)
+  const answer = continuousCalculation(newValue)
+  res.json({
+    answer
   })
 })
 
