@@ -2,6 +2,7 @@
 const express = require('express')
 const cors = require('cors')
 const math = require('mathjs')
+const routes = require('./routes')
 
 // 建立 express 實例
 const app = express()
