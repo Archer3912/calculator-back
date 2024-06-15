@@ -21,10 +21,12 @@ router.get('/', (req, res) => {
 })
 
 
+
+
 const calculator = require('./calculator')
-router.use(calculator)
+router.use('/calculator',calculator)
 
 const history = require('./history')
-router.use(history)
+router.use('/history',history)
 
 module.exports= router

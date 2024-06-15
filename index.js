@@ -10,6 +10,8 @@ const app = express()
 
 // 使用 cors 中間件，允許不同網域來的請求，免於同源策略的限制
 app.use(cors())
+//
+app.use(express.json())
 
 //使用路由設定
 app.use(router);

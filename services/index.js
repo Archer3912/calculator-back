@@ -3,7 +3,8 @@
 //const {plus, minus, multiply, divide, compute } = require('./calculator')
 //module.exports = { plus, minus, multiply, divide, compute }
 const calculator = require('./calculator')
-module.exports = calculator
+const history = require('./history')
+module.exports = { calculator, history }
 
 
 

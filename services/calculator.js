@@ -1,6 +1,12 @@
+const history = require('./history')
+
 class Calculator {
   constructor(round = 5) {
     this.round = round
+  }
+
+  changRound(newRound) {
+    this.round = newRound
   }
 
   plus(v1, v2) {
@@ -96,18 +102,16 @@ class Calculator {
 
   // 完整的計算函數
   compute(value) {
-    let splitequation = splitEquation(value)
+    let splitequation = this.splitEquation(value)
     let multiplicationAndDivide =
       this.calculatorMultiplicationAndDivide(splitequation)
     let plusAndMinus = this.calculatorPlusAndMinus(multiplicationAndDivide)
+    history.store(value, plusAndMinus)
     return plusAndMinus
   }
 }
 
 calculator = new Calculator()
-
-
-
 
 // 使用class只要把名稱丟進去就可以
 module.exports = calculator
